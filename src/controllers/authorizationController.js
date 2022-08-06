@@ -1,4 +1,5 @@
 import bcrypt from 'bcrypt';
+import { v4 as uuid } from 'uuid';
 import authRepository from '../repository/authorizationRepository.js';
 
 const authorizationController = {
@@ -22,7 +23,26 @@ const authorizationController = {
 
 
     },
-    signIn: (req, res) => {
+    signIn: async (req, res) => {
+        try {
+            const getUser = await authRepository.getUserByEmail(req.body.email);
+
+            if(getUser && bcrypt.compareSync(req.body.password, getUser[0].password)){
+                const token = uuid();
+                console.log("Chegou aqui: ", token)
+                const saveNewUser = await authRepository.saveUserSession(getUser[0].id, token);
+
+                if(saveNewUser === 201){
+                    return res.send(token).status(saveNewUser);
+                }else{
+                    return res.sendStatus(saveNewUser);
+                }               
+            }else{
+                return res.sendStatus(401);
+            }
+        } catch (error) {
+            
+        }
     }
 }
 
