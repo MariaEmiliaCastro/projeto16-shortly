@@ -29,11 +29,11 @@ const authorizationController = {
 
             if(getUser && bcrypt.compareSync(req.body.password, getUser[0].password)){
                 const token = uuid();
-                console.log("Chegou aqui: ", token)
+                
                 const saveNewUser = await authRepository.saveUserSession(getUser[0].id, token);
 
                 if(saveNewUser === 201){
-                    return res.send(token).status(saveNewUser);
+                    return res.send({ token }).status(saveNewUser);
                 }else{
                     return res.sendStatus(saveNewUser);
                 }               
