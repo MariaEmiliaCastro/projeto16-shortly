@@ -2,7 +2,8 @@ import connection from "../db/postgres.js";
 
 const authRepository = {
     getUserByEmail: async (email) => {
-        const { rows } = await connection.query('SELECT * FROM users WHERE email = $1', [email]);
+        console.log("hey")
+        const { rows } = await connection.query('SELECT * FROM "users" WHERE email = $1', [email]);
         
         if(rows.length > 0){
             return rows;
@@ -36,6 +37,15 @@ const authRepository = {
             return 201;
         }else{
             return 401;
+        }
+    },
+    searchAuthorizeToken: async (token) => {
+        const { rows } = await connection.query('SELECT * FROM "authorization" WHERE token = $1', [token]);
+
+        if(rows.length > 0){
+            return rows;
+        }else{
+            return 0;
         }
     }
 }

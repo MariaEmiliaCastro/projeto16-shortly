@@ -24,6 +24,18 @@ const validateAuth = {
             next();
         }
 
+    },
+    validateAuthorizationHeader: (req, res, next) => {
+        const { authorization } = req.headers;
+
+        const token = authorization?.replace('Bearer ', '');
+
+        if(token.length < 7){
+            return res.sendStatus(401);
+        } 
+
+        res.locals.token = token;
+        next();
     }
 }
 

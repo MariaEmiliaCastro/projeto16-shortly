@@ -25,17 +25,17 @@ const authorizationController = {
     },
     signIn: async (req, res) => {
         try {
+            console.log("Entrou no SignIn Controller")
             const getUser = await authRepository.getUserByEmail(req.body.email);
-
             if(getUser && bcrypt.compareSync(req.body.password, getUser[0].password)){
                 const token = uuid();
-                
-                const saveNewUser = await authRepository.saveUserSession(getUser[0].id, token);
 
-                if(saveNewUser === 201){
-                    return res.send({ token }).status(saveNewUser);
+                const saveNewUserSession = await authRepository.saveUserSession(getUser[0].id, token);
+
+                if(saveNewUserSession === 201){
+                    return res.send({ token }).status(saveNewUserSession);
                 }else{
-                    return res.sendStatus(saveNewUser);
+                    return res.sendStatus(saveNewUserSession);
                 }               
             }else{
                 return res.sendStatus(401);

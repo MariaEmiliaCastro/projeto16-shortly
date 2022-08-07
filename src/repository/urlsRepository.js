@@ -1,0 +1,29 @@
+import connection from "../db/postgres.js";
+
+const urlsRepository = {
+    saveShortenedUrl: async (userId, url, shortUrl) => {
+        console.log(userId)
+        const query = await connection.query('INSERT INTO "urls" (short_url, url, visit_count, user_id) VALUES ($1, $2, 0, $3)', [
+            shortUrl,
+            url,
+            userId
+        ])
+        console.log(query)
+    },
+    updateLinksCount: async (userId) => {
+        const query = await connection.query('UPDATE "users" SET links_count = links_count + 1 WHERE id = $1', [userId])
+    },
+    getShortUrlByParam: async (searchParam, param) => {
+        const { rows } = await connection.query(`SELECT id, "short_url" AS "shortUrl", url FROM "urls" WHERE ${searchParam} = $1`, [param]);
+        return rows;
+    },
+    updateVisitCount: async (shortUrlId) => {
+        await connection.query('UPDATE "urls" SET visit_count = visit_count + 1 WHERE id = $1', [shortUrlId]);
+    },
+    deleteShortUrl: async (shortUrlId, userId) => {
+        const query = connection.query('DELETE FROM "urls" WHERE id = $1 AND user_id = $2', [shortUrlId, userId]);
+        return query;
+    }
+}
+
+export default urlsRepository;
