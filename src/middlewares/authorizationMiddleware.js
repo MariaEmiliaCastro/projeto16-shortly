@@ -35,6 +35,7 @@ const validateAuth = {
         } 
 
         res.locals.token = token;
+        console.log("Saindo validateAuthorizationHeader");
         next();
     }
 }

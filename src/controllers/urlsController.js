@@ -70,13 +70,17 @@ const urlsController = {
     deleteShortUrl: async (req, res) => {
         try {
             const authToken = await authRepository.searchAuthorizeToken(res.locals.token)
-            const deleteUrlResult = await urlsRepository.deleteShortUrl(req.params.id, authToken[0].user_id);            
 
-            if(deleteUrlResult.rowCount > 0){
-                await urlsRepository.updateLinksCount(authToken[0].user_id, 'delete');
-                res.sendStatus(204);
+            if(authToken.length > 0){
+                const deleteUrlResult = await urlsRepository.deleteShortUrl(req.params.id, authToken[0].user_id);
+                if(deleteUrlResult.rowCount > 0){
+                    await urlsRepository.updateLinksCount(authToken[0].user_id, 'delete');
+                    res.sendStatus(204);
+                }else{
+                    return res.sendStatus(deleteUrlResult);
+                }
             }else{
-                return res.sendStatus(deleteUrlResult);
+                return res.sendStatus(401);
             }
 
         } catch (error) {

@@ -26,7 +26,7 @@ const urlsRepository = {
     },
     deleteShortUrl: async (shortUrlId, userId) => {
         const verifyIfIsUrlExists = await connection.query('SELECT * FROM "urls" WHERE id = $1', [shortUrlId]);
-        console.log(verifyIfIsUrlExists)
+        
         const verifyIfIsFromUser = await connection.query('SELECT * FROM "urls" WHERE id = $1 AND user_id = $2', [shortUrlId, userId]);
         if(verifyIfIsUrlExists.rowCount > 0){
             if(verifyIfIsFromUser.rowCount > 0){

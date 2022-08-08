@@ -41,11 +41,11 @@ const authRepository = {
     },
     searchAuthorizeToken: async (token) => {
         const { rows } = await connection.query('SELECT * FROM "authorization" WHERE token = $1', [token]);
-
+        
         if(rows.length > 0){
             return rows;
         }else{
-            return 0;
+            return false;
         }
     }
 }
