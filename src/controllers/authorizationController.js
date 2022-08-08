@@ -18,7 +18,7 @@ const authorizationController = {
     
             return res.sendStatus(saveNewUser);            
         } catch (error) {
-            res.send(error.detail).status(500);
+            res.send(error).status(500);
         }
 
 
