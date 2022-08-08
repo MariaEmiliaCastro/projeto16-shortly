@@ -71,12 +71,14 @@ const urlsController = {
         try {
             const authToken = await authRepository.searchAuthorizeToken(res.locals.token)
             const deleteUrlResult = await urlsRepository.deleteShortUrl(req.params.id, authToken[0].user_id);            
-            console.log(deleteUrlResult);
-            if(deleteUrlResult.rowCount === 0){
-                return res.sendStatus(404);
+
+            if(deleteUrlResult.rowCount > 0){
+                await urlsRepository.updateLinksCount(authToken[0].user_id, 'delete');
+                res.sendStatus(204);
+            }else{
+                return res.sendStatus(deleteUrlResult);
             }
-            await urlsRepository.updateLinksCount(authToken[0].user_id, 'delete');
-            res.sendStatus(204);
+
         } catch (error) {
             res.send(error).status(500);
         }

@@ -25,8 +25,17 @@ const urlsRepository = {
         await connection.query('UPDATE "urls" SET visit_count = visit_count + 1 WHERE id = $1', [shortUrlId]);
     },
     deleteShortUrl: async (shortUrlId, userId) => {
-        const query = connection.query('DELETE FROM "urls" WHERE id = $1 AND user_id = $2', [shortUrlId, userId]);
-        return query;
+        const verifyIfIsUrlExists = await connection.query('SELECT * FROM "urls" WHERE id = $1', [shortUrlId]);
+        const verifyIfIsFromUser = await connection.query('SELECT * FROM "urls" WHERE id = $1 AND user_id = $2', [shortUrlId, userId]);
+        if(verifyIfIsFromUser.rowCount > 0 & verifyIfIsUrlExists.rowCount > 0){
+            const query = await connection.query('DELETE FROM "urls" WHERE id = $1 AND user_id = $2', [shortUrlId, userId]);
+            return query;
+        }else if (verifyIfIsFromUser.rowCount === 0 & verifyIfIsUrlExists.rowCount > 0){
+            return 401;
+        }else{
+            return 404;
+        }
+
     }
 }
 
