@@ -9,6 +9,16 @@ const usersRepository = {
 
         const {rows} = await connection.query('SELECT SUM("urls".visit_count) as "visitCount" FROM "urls" WHERE user_id = $1', [userId]);
         return {shortUrl, rows};
+    },
+    rankUserData: async () => {
+        const rank = await connection.query(`SELECT COALESCE(SUM("urls".visit_count),0) as "visitCount", "users".id,"users".name, "users".links_count  AS "linksCount" FROM "users" 
+                                                LEFT JOIN "urls" 
+                                                ON "users".id = "urls".user_id
+                                                GROUP BY  "users".id,"users".name, "users".links_count
+                                                ORDER BY "visitCount" DESC
+                                                LIMIT 10 
+                                            `)
+        return rank.rows;
     }
 }
 

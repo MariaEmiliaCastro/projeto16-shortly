@@ -10,8 +10,12 @@ const urlsRepository = {
         ])
         console.log(query)
     },
-    updateLinksCount: async (userId) => {
-        const query = await connection.query('UPDATE "users" SET links_count = links_count + 1 WHERE id = $1', [userId])
+    updateLinksCount: async (userId, type) => {
+        if(type === 'add'){
+            const query = await connection.query('UPDATE "users" SET links_count = links_count + 1 WHERE id = $1', [userId])
+        }else{
+            const query = await connection.query('UPDATE "users" SET links_count = links_count - 1 WHERE id = $1', [userId])
+        }  
     },
     getShortUrlByParam: async (searchParam, param) => {
         const { rows } = await connection.query(`SELECT id, "short_url" AS "shortUrl", url FROM "urls" WHERE ${searchParam} = $1`, [param]);

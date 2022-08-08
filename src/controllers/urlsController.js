@@ -13,7 +13,7 @@ const urlsController = {
                 console.log("Short url generated: ", shortUrl);
 
                 await urlsRepository.saveShortenedUrl(authToken[0].user_id, req.body.url, shortUrl);
-                await urlsRepository.updateLinksCount(authToken[0].user_id);
+                await urlsRepository.updateLinksCount(authToken[0].user_id, 'add');
 
                 return res.send(shortUrl).status(201); 
             }else{
@@ -70,11 +70,12 @@ const urlsController = {
     deleteShortUrl: async (req, res) => {
         try {
             const authToken = await authRepository.searchAuthorizeToken(res.locals.token)
-            const deleteUrlResult = await urlsRepository.deleteShortUrl(req.params.id, authToken[0].user_id)
+            const deleteUrlResult = await urlsRepository.deleteShortUrl(req.params.id, authToken[0].user_id);            
             console.log(deleteUrlResult);
             if(deleteUrlResult.rowCount === 0){
                 return res.sendStatus(404);
             }
+            await urlsRepository.updateLinksCount(authToken[0].user_id, 'delete');
             res.sendStatus(204);
         } catch (error) {
             res.send(error).status(500);

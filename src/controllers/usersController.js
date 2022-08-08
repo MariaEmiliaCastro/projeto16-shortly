@@ -25,6 +25,15 @@ const usersController = {
             res.send(error).status(500);
         }
 
+    },
+    rankUsers: async (req, res) => {
+        try {
+            const rank = await usersRepository.rankUserData();
+            res.send(rank).status(200);
+        } catch (error) {
+            console.log(error)
+            res.send(error).status(500);   
+        }
     }
 }
 
