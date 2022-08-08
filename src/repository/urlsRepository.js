@@ -27,11 +27,13 @@ const urlsRepository = {
     deleteShortUrl: async (shortUrlId, userId) => {
         const verifyIfIsUrlExists = await connection.query('SELECT * FROM "urls" WHERE id = $1', [shortUrlId]);
         const verifyIfIsFromUser = await connection.query('SELECT * FROM "urls" WHERE id = $1 AND user_id = $2', [shortUrlId, userId]);
-        if(verifyIfIsFromUser.rowCount > 0 & verifyIfIsUrlExists.rowCount > 0){
-            const query = await connection.query('DELETE FROM "urls" WHERE id = $1 AND user_id = $2', [shortUrlId, userId]);
-            return query;
-        }else if (verifyIfIsFromUser.rowCount === 0 & verifyIfIsUrlExists.rowCount > 0){
-            return 401;
+        if(verifyIfIsUrlExists.rowCount > 0){
+            if(verifyIfIsFromUser.rowCount > 0){
+                const query = await connection.query('DELETE FROM "urls" WHERE id = $1 AND user_id = $2', [shortUrlId, userId]);
+                return query;
+            }else{
+                return 401;
+            }
         }else{
             return 404;
         }
