@@ -8,18 +8,31 @@ const usersController = {
             const authToken = await authRepository.searchAuthorizeToken(res.locals.token);
 
             if(authToken.length > 0){
+                console.log("AAAAAAAAAAAA")
                 const userUrls = await usersRepository.getUserData(authToken[0].user_id);
-                const userData = {
-                    id: authToken[0].user_id,
-                    name: userUrls.shortUrl.rows[0].name,
-                    visitCount: userUrls.rows[0].visitCount,
-                    shortenedUrls: userUrls.shortUrl.rows.map(({name, ...keepAttrs}) => keepAttrs)
+                if(userUrls.userData.rowCount > 0){
+                    const userData = {
+                        id: authToken[0].user_id,
+                        name: userUrls.userData[0].name,
+                        visitCount: userUrls.rows[0].visitCount,
+                        shortenedUrls: userUrls.userData.map(({name, ...keepAttrs}) => keepAttrs)
+                    }
+                    
+                    return res.send(userData).status(200);
+                }else{
+                    const getUserData = await usersRepository.getSimpleUserData(authToken[0].user_id);
+                    const data = {
+                        id: authToken[0].user_id,
+                        name: getUserData[0].name,
+                        visitCount: getUserData[0].visitCount,
+                        shortenedUrls:userUrls.userData.map(({name, ...keepAttrs}) => keepAttrs) 
+                    }
+                    return res.send(data).status(200);
                 }
-                
-                res.send(userData).status(200);
-            }else{
-                return res.sendStatus(404);
-            }           
+
+            }
+            
+            return res.sendStatus(404);          
         } catch (error) {
             console.log(error)
             res.send(error).status(500);
